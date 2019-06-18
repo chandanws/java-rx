@@ -1,0 +1,7 @@
+# Files and directories listed here will not be tracked by Git VCS
+
+.gradle/
+.idea/
+out/
+build/
+*.iml
