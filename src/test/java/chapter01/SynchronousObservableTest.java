@@ -4,7 +4,7 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Subscriber;
 
-public class ObservableTest {
+public class SynchronousObservableTest {
 
     @Test
     public void shouldBeSynchronousByDefault() {
