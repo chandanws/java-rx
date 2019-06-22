@@ -29,4 +29,18 @@ public class JustObservableTest {
         Mockito.verify(subscriber).onNext(Mockito.any());
         Mockito.verify(subscriber).onCompleted();
     }
+
+    @Test
+    public void shouldImitateJustObservable() {
+        // Arrange
+        Observable<Integer> justObservable = Observable.create((Subscriber<? super Integer> justSubscriber) -> {
+            justSubscriber.onNext(1);
+            justSubscriber.onCompleted();
+        });
+        // Act
+        justObservable.subscribe(subscriber);
+        // Assert
+        Mockito.verify(subscriber).onNext(Mockito.any());
+        Mockito.verify(subscriber).onCompleted();
+    }
 }
