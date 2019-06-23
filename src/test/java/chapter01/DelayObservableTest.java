@@ -30,4 +30,13 @@ public class DelayObservableTest {
 
         TimeUnit.SECONDS.sleep(10);
     }
+
+    @Test
+    public void shouldPreserveEventsOrder() throws InterruptedException {
+        Observable.just("abc", "a", "ab")
+                .concatMap(word -> Observable.timer(word.length(), TimeUnit.SECONDS).map(x -> word))
+                .subscribe(event -> log.debug("{}", event));
+
+        TimeUnit.SECONDS.sleep(10);
+    }
 }
