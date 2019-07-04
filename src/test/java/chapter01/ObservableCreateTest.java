@@ -6,6 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.Subscriber;
+import rx.schedulers.Schedulers;
+
+import java.util.concurrent.Executors;
 
 public class ObservableCreateTest {
 
@@ -28,16 +31,34 @@ public class ObservableCreateTest {
 
     @Test
     public void shouldBeExecutedSynchronously() {
-        Observable<String> messages = Observable.create((Subscriber<? super String> subscriber) -> {
-            LOGGER.info("Subscribed");
-            subscriber.onNext(FIRST_MESSAGE);
-            subscriber.onNext(SECOND_MESSAGE);
-            subscriber.onCompleted();
-        });
+        Observable<String> messages = getMessageEvents();
 
         LOGGER.info("Started");
         Observable<String> transformedMessages = messages.map(message -> message + " Transformed");
         LOGGER.info("Transformed");
         transformedMessages.subscribe(message -> LOGGER.info("Printed {}", message));
+        LOGGER.info("Finished");
+    }
+
+    @Test
+    public void shouldBeExecutedAsynchronously() throws InterruptedException {
+        Observable<String> messages = getMessageEvents();
+
+        LOGGER.info("Started");
+        messages
+                .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
+                .subscribe(message -> LOGGER.info("Printed {}", message));
+        LOGGER.info("Finished");
+
+        Thread.sleep(1000);
+    }
+
+    private Observable<String> getMessageEvents() {
+        return Observable.create((Subscriber<? super String> subscriber) -> {
+            LOGGER.info("Subscribed");
+            subscriber.onNext(FIRST_MESSAGE);
+            subscriber.onNext(SECOND_MESSAGE);
+            subscriber.onCompleted();
+        });
     }
 }
