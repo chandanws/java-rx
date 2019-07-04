@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
+import utility.TestSchedulers;
 
 import java.util.concurrent.Executors;
 
@@ -51,6 +52,18 @@ public class ObservableCreateTest {
         LOGGER.info("Finished");
 
         Thread.sleep(1000);
+    }
+
+    @Test
+    public void shouldHonorFirstSubscribeOn() throws InterruptedException {
+        LOGGER.info("Started");
+        getMessageEvents()
+                .subscribeOn(TestSchedulers.createAScheduler())
+                .subscribeOn(TestSchedulers.createBScheduler())
+                .subscribe(message -> LOGGER.info("Printed {}", message));
+
+        Thread.sleep(1000);
+        LOGGER.info("Finished");
     }
 
     private Observable<String> getMessageEvents() {
