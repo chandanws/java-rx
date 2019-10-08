@@ -13,10 +13,16 @@ import rx.observers.TestSubscriber;
 public class ErrorHandingTest {
 
     private TestSubscriber<Object> subscriber;
+    private Observable.OnSubscribe<Object> erroneousEventSequence;
 
     @Before
     public void setUp() {
         subscriber = new TestSubscriber<>();
+        erroneousEventSequence = emitter -> {
+            emitter.onNext(1);
+            emitter.onNext(2 / 0);
+            emitter.onNext(3);
+        };
     }
 
     @Test
@@ -31,19 +37,46 @@ public class ErrorHandingTest {
     }
 
     @Test
-    public void name() {
-        Observable.OnSubscribe<Object> onSubscribe = emitter -> {
-            emitter.onNext(1);
-            emitter.onNext(2 / 0);
-            emitter.onNext(3);
-        };
-        Observable.create(onSubscribe)
+    public void shouldEmitSingleValueAndBreak() {
+        Observable.create(erroneousEventSequence)
                   .doOnError(ex -> System.err.println("Error occurred"))
                   .subscribe(subscriber);
 
         subscriber.assertError(ArithmeticException.class);
         subscriber.assertNotCompleted();
         subscriber.assertValue(1);
+    }
+
+    /**
+     * Verifies functionality, which, in case of errors, allows to substitute
+     * error event with default value and eventually emit onCompleted event.
+     */
+    @Test
+    public void shouldSubstituteErrorEvent() {
+        Observable.create(erroneousEventSequence)
+                  .onErrorReturn(ex -> {
+                      System.err.println(ex);
+                      return 2;
+                  })
+                  .subscribe(subscriber);
+
+        subscriber.assertNoErrors();
+        subscriber.assertValues(1, 2);
+        subscriber.assertCompleted();
+    }
+
+    /**
+     * Shows the way to resume sequence of event with another sequence.
+     */
+    @Test
+    public void shouldResumeOnErrorEventWithAnotherSequence() {
+        Observable.create(erroneousEventSequence)
+                  .onErrorResumeNext(Observable.just(2, 3))
+                  .subscribe(subscriber);
+
+        subscriber.assertNoErrors();
+        subscriber.assertValues(1, 2, 3);
+        subscriber.assertCompleted();
     }
 
     /**
