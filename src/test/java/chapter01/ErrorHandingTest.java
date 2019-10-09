@@ -24,8 +24,8 @@ public class ErrorHandingTest {
         subscriber = new TestSubscriber<>();
         erroneousEventSequence = emitter -> {
             emitter.onNext(1);
-            emitter.onNext(2 / 0);
-            emitter.onNext(3);
+            emitter.onNext(2);
+            emitter.onNext(3 / 0);
         };
         correctEventSequence = emitter -> {
             emitter.onNext(4);
@@ -59,7 +59,7 @@ public class ErrorHandingTest {
 
         subscriber.assertError(ArithmeticException.class);
         subscriber.assertNotCompleted();
-        subscriber.assertValue(1);
+        subscriber.assertValues(1, 2);
     }
 
     /**
@@ -71,12 +71,12 @@ public class ErrorHandingTest {
         Observable.create(erroneousEventSequence)
                   .onErrorReturn(ex -> {
                       System.err.println(ex);
-                      return 2;
+                      return 3;
                   })
                   .subscribe(subscriber);
 
         subscriber.assertNoErrors();
-        subscriber.assertValues(1, 2);
+        subscriber.assertValues(1, 2, 3);
         subscriber.assertCompleted();
     }
 
@@ -86,11 +86,11 @@ public class ErrorHandingTest {
     @Test
     public void shouldResumeOnErrorEventWithAnotherSequence() {
         Observable.create(erroneousEventSequence)
-                  .onErrorResumeNext(Observable.just(2, 3))
+                  .onErrorResumeNext(Observable.just(3, 4))
                   .subscribe(subscriber);
 
         subscriber.assertNoErrors();
-        subscriber.assertValues(1, 2, 3);
+        subscriber.assertValues(1, 2, 3, 4);
         subscriber.assertCompleted();
     }
 
@@ -116,7 +116,7 @@ public class ErrorHandingTest {
         Observable.create(erroneousEventSequence)
                   .doOnError(ex -> System.err.println("Outer observable error 1"))
                   .doOnError(ex -> System.err.println("Outer observable error 2"))
-                  // In case of error event is not emitted, thus no transformation happens
+                  // In case of error - event is not emitted, thus no transformation happens
                   .flatMap(event -> Observable.create(correctEventSequence)
                                               .doOnError(ex -> System.err.println("Inner observable error")))
                   .doOnError(ex -> System.err.println("Merged observable error 1"))
@@ -125,7 +125,31 @@ public class ErrorHandingTest {
                   .subscribe(subscriber);
 
         subscriber.assertError(ArithmeticException.class);
-        subscriber.assertValues(4, 5, 6);
+        subscriber.assertValues(4, 5, 6, 4, 5, 6);
         subscriber.assertNotCompleted();
+    }
+
+    @Test
+    public void asyncFlatMapChainShouldBeInterruptedInCaseOfError() throws InterruptedException {
+        asyncErroneousObservable
+                .doOnError(ex -> printError("Outer"))
+                .flatMap(event -> asyncCorrectObservable
+                        .doOnNext(innerEvent -> printEvent("Inner"))
+                        .doOnError(ex -> printError("Inner")))
+                .doOnError(ex -> printError("Merged"))
+                .doOnNext(event -> printEvent("Merged"))
+                .subscribe(subscriber);
+
+        Thread.sleep(1000);
+        subscriber.assertError(ArithmeticException.class);
+        subscriber.assertNotCompleted();
+    }
+
+    private void printError(String name) {
+        System.err.println(String.format("%s observable error - %s", name, Thread.currentThread().getName()));
+    }
+
+    private void printEvent(String name) {
+        System.out.println(String.format("%s observable event - %s", name, Thread.currentThread().getName()));
     }
 }
