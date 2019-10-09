@@ -6,6 +6,7 @@ import rx.Observable;
 import rx.exceptions.CompositeException;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 /**
  * Verifies error-handling functionality of RxJava.
@@ -14,6 +15,9 @@ public class ErrorHandingTest {
 
     private TestSubscriber<Object> subscriber;
     private Observable.OnSubscribe<Object> erroneousEventSequence;
+    private Observable.OnSubscribe<Object> correctEventSequence;
+    private Observable<Object> asyncErroneousObservable;
+    private Observable<Object> asyncCorrectObservable;
 
     @Before
     public void setUp() {
@@ -23,6 +27,17 @@ public class ErrorHandingTest {
             emitter.onNext(2 / 0);
             emitter.onNext(3);
         };
+        correctEventSequence = emitter -> {
+            emitter.onNext(4);
+            emitter.onNext(5);
+            emitter.onNext(6);
+        };
+        asyncErroneousObservable = Observable.create(erroneousEventSequence)
+                                             .subscribeOn(Schedulers.io())
+                                             .observeOn(Schedulers.computation());
+        asyncCorrectObservable = Observable.create(correctEventSequence)
+                                           .subscribeOn(Schedulers.io())
+                                           .observeOn(Schedulers.computation());
     }
 
     @Test
@@ -94,5 +109,23 @@ public class ErrorHandingTest {
         subscriber.assertError(CompositeException.class);
         subscriber.assertNotCompleted();
         subscriber.assertNoValues();
+    }
+
+    @Test
+    public void flatMapChainShouldBeInterruptedInCaseOfError() {
+        Observable.create(erroneousEventSequence)
+                  .doOnError(ex -> System.err.println("Outer observable error 1"))
+                  .doOnError(ex -> System.err.println("Outer observable error 2"))
+                  // In case of error event is not emitted, thus no transformation happens
+                  .flatMap(event -> Observable.create(correctEventSequence)
+                                              .doOnError(ex -> System.err.println("Inner observable error")))
+                  .doOnError(ex -> System.err.println("Merged observable error 1"))
+                  .doOnError(ex -> System.err.println("Merged observable error 2"))
+                  .doOnNext(System.out::println)
+                  .subscribe(subscriber);
+
+        subscriber.assertError(ArithmeticException.class);
+        subscriber.assertValues(4, 5, 6);
+        subscriber.assertNotCompleted();
     }
 }
