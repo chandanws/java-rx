@@ -5,6 +5,7 @@ import org.junit.Test;
 import rx.Observable;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.schedulers.Schedulers;
+import utility.ExceptionPropagator;
 
 
 public class ErrorPropagation {
@@ -14,8 +15,7 @@ public class ErrorPropagation {
     @Before
     public void setUp() {
         erroneousEvents = Observable.create(subscriber -> {
-            subscriber.onNext(1);
-            subscriber.onNext(2 / 0);
+            subscriber.onNext(2);
         });
     }
 
@@ -36,6 +36,7 @@ public class ErrorPropagation {
     public void shouldInterruptAsyncObserversThread() throws InterruptedException {
         erroneousEvents.subscribeOn(Schedulers.io())
                        .observeOn(Schedulers.computation())
+                       .compose(ExceptionPropagator.propagateException())
                        .subscribe(System.out::print);
 
         Thread.sleep(1000);
