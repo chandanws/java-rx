@@ -10,6 +10,9 @@ import rx.schedulers.Schedulers;
 
 /**
  * Verifies error-handling functionality of RxJava.
+ * Note: it's important to remember that all operator in RxJava swallow exceptions
+ * in case error-handling functionality is introduced, e.g. onErrorReturn. Logging
+ * and monitoring part is up to user.
  */
 public class ErrorHandingTest {
 
