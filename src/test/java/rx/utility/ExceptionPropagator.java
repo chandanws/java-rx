@@ -1,4 +1,4 @@
-package utility;
+package rx.utility;
 
 import rx.Observable;
 import rx.exceptions.Exceptions;

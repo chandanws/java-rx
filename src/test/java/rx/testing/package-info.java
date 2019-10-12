@@ -5,4 +5,4 @@
  * @author Valentine Shemyako
  * @since August 17, 2019
  */
-package testing;
+package rx.testing;

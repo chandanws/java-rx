@@ -1,11 +1,11 @@
-package chapter01;
+package rx.chapter01;
 
 import org.junit.Before;
 import org.junit.Test;
 import rx.Observable;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.schedulers.Schedulers;
-import utility.ExceptionPropagator;
+import rx.utility.ExceptionPropagator;
 
 
 public class ErrorPropagation {

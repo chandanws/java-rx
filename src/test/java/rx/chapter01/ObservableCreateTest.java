@@ -1,4 +1,4 @@
-package chapter01;
+package rx.chapter01;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
-import utility.TestSchedulers;
+import rx.utility.TestSchedulers;
 
 import java.util.concurrent.Executors;
 

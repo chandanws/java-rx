@@ -1,4 +1,4 @@
-package utility;
+package rx.utility;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import rx.Scheduler;
