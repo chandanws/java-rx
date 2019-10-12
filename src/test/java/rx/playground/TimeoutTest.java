@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import rx.Observable;
 import rx.observers.TestSubscriber;
+import rx.utility.TimeDelayer;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -34,7 +35,7 @@ public class TimeoutTest {
         agreement.timeout(HIGH_TIMEOUT, TimeUnit.MILLISECONDS)
                  .subscribe(subscriber);
 
-        sleepForOneSecond();
+        TimeDelayer.sleepForOneSecond();
         subscriber.assertNoErrors();
         subscriber.assertValueCount(1);
         subscriber.assertCompleted();
@@ -45,19 +46,12 @@ public class TimeoutTest {
         agreement.timeout(LOW_TIMEOUT, TimeUnit.MILLISECONDS)
                  .subscribe(subscriber);
 
-        sleepForOneSecond();
+        TimeDelayer.sleepForOneSecond();
         subscriber.assertError(TimeoutException.class);
         subscriber.assertValueCount(1);
         subscriber.assertNotCompleted();
     }
 
-    private void sleepForOneSecond() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private static class Confirmation {
     }
