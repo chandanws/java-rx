@@ -1,4 +1,4 @@
-package rx.chapter01;
+package rx.playground;
 
 import org.junit.Before;
 import org.junit.Test;
