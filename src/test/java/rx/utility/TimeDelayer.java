@@ -13,4 +13,12 @@ public final class TimeDelayer {
             throw new RuntimeException(e);
         }
     }
+
+    public static void sleepForAWhile() {
+        try {
+            Thread.sleep(400);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
