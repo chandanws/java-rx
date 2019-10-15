@@ -32,7 +32,7 @@ public class PullPushComparison {
         private void drinkTea() {
             log.debug("Set the kettle");
             Observable.fromCallable(whistlingKettle::boilWater)
-                      .subscribe(onWaterBoiling -> makeTea());
+                      .subscribe(onKettleWhistling -> makeTea());
         }
 
         private void makeTea() {
