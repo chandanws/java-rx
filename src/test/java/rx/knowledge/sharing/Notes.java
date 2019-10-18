@@ -9,6 +9,8 @@ package rx.knowledge.sharing;
  * <li>Allows to combine observables {@link Note004_Combination}.</li>
  * <li>Also supports feedback channel, so called asynchronous pulling (used to implement back-pressure mechanism).</li>
  * <li>Central type - {@link rx.Observable}. Represents stream of events.</li>
+ * <li>{@link rx.Observable} which emits a single event or fails is called {@link rx.Single}</li>
+ * <li>{@link rx.Observable} which emits a completion event or fails is called {@link rx.Completable}</li>
  * <li>Individual Observable streams permit neither concurrency nor parallelism.
  * Instead, they are achieved via composition of async Observables.</li>
  * <li>Main multithreading contract: events (onNext(), onCompleted(), onError()) can never be emitted concurrently.
