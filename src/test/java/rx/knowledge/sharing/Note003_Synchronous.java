@@ -26,5 +26,11 @@ public class Note003_Synchronous {
 
         // 3. Again log thread name
         log.debug("Client's thread '{}'", threadName);
+
+        // Output will be:
+        //      Client's thread 'main'
+        //      Observable's thread 'main'
+        //      Observer's thread 'main'
+        //      Client's thread 'main'
     }
 }
