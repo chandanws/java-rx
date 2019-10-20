@@ -11,7 +11,7 @@ public class Note003_Synchronous {
 
     @Test
     public void shouldBeSynchronous() {
-        // 1. Catch thread name
+        // 1. Catch thread's name
         String threadName = Thread.currentThread().getName();
         log.debug("Client's thread '{}'", threadName);
 

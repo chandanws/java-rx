@@ -2,8 +2,10 @@ package rx.knowledge.sharing;
 
 import org.junit.Test;
 import rx.Completable;
+import rx.Observable;
 import rx.Single;
 import rx.knowledge.sharing.utility.CompletionEventObserver;
+import rx.knowledge.sharing.utility.EventObserver;
 import rx.knowledge.sharing.utility.SingleEventObserver;
 
 public class Note005_ObservableTypes {
@@ -39,5 +41,22 @@ public class Note005_ObservableTypes {
         });
         CompletionEventObserver observer = new CompletionEventObserver();
         completable.subscribe(observer);
+    }
+
+    @Test
+    public void shouldEmitSeveralValues() {
+        Observable<Integer> observable = Observable.create(observer -> {
+            int count = 0;
+            try {
+                while (count < 3) {
+                    observer.onNext(count++);
+                }
+            } catch (Throwable e) {
+                observer.onError(e);
+            }
+            observer.onCompleted();
+        });
+        EventObserver<Integer> observer = new EventObserver<>();
+        observable.subscribe(observer);
     }
 }
