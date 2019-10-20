@@ -7,6 +7,7 @@ import rx.Observable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,5 +43,26 @@ public class Note006_FromEagerToLazy {
     private List<Integer> generateNumbers() {
         System.out.print(INVOCATION_MESSAGE);
         return Arrays.asList(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void eager() {
+        smile();
+    }
+
+    @Test
+    public void stillEager() {
+        Observable.just(smile());
+    }
+
+    @Test
+    public void lazy() {
+        Callable<String> finallyCallback = () -> smile();
+        Observable.fromCallable(finallyCallback);
+    }
+
+    private String smile() {
+        System.out.print("Passing smiley for you!");
+        return "=)";
     }
 }
