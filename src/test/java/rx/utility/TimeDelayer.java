@@ -6,6 +6,14 @@ public final class TimeDelayer {
         throw new IllegalStateException("Instance creation is forbidden");
     }
 
+    public static void sleepForNumberOfSeconds(int number) {
+        try {
+            Thread.sleep(1000 * number);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void sleepForOneSecond() {
         try {
             Thread.sleep(1000);
