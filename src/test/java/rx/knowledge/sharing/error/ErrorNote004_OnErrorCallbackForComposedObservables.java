@@ -5,7 +5,7 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 import rx.utility.TimeDelayer;
 
-public class ErrorNote004_ErrorHandlingForComposedObservables {
+public class ErrorNote004_OnErrorCallbackForComposedObservables {
 
     @Test
     public void shouldLogFirstError() {
