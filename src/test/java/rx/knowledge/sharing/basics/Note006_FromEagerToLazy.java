@@ -1,4 +1,4 @@
-package rx.knowledge.sharing;
+package rx.knowledge.sharing.basics;
 
 import org.junit.Rule;
 import org.junit.Test;

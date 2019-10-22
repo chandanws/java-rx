@@ -1,4 +1,4 @@
-package rx.knowledge.sharing;
+package rx.knowledge.sharing.basics;
 
 /**
  * <h3>RxJava Notes.</h3>
