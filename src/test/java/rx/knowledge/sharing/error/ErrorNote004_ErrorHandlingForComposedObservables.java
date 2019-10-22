@@ -8,7 +8,7 @@ import rx.utility.TimeDelayer;
 public class ErrorNote004_ErrorHandlingForComposedObservables {
 
     @Test
-    public void name() {
+    public void shouldLogFirstError() {
         Observable<String> firstObservable = Observable
                 .fromCallable(() -> getMessage("FIRST"))
                 .subscribeOn(Schedulers.io());
