@@ -1,5 +1,7 @@
 package rx.utility;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public final class TimeDelayer {
 
     private TimeDelayer() {
@@ -23,8 +25,17 @@ public final class TimeDelayer {
     }
 
     public static void sleepForAWhile() {
+        sleepForAWhile(400);
+    }
+
+    public static void sleepForRandomMillis() {
+        int millis = ThreadLocalRandom.current().nextInt(400, 600);
+        sleepForAWhile(millis);
+    }
+
+    public static void sleepForAWhile(int millis) {
         try {
-            Thread.sleep(400);
+            Thread.sleep(millis);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
