@@ -7,21 +7,19 @@ import static rx.knowledge.sharing.error.Messages.ERROR;
 import static rx.knowledge.sharing.error.Messages.FINISH_MESSAGE;
 import static rx.knowledge.sharing.error.Messages.START_MESSAGE;
 
-public class ErrorNote001_OnErrorCallback {
-
+public class ErrorNote002_AbsenceOfOnErrorCallback {
 
     /**
-     * Subscriber can provide a callback which will be invoked in case Observable's
-     * pipeline encounters error.
+     * Observable will throw (but not pass down the stream!) an exception, in case subscriber
+     * doesn't provide error-handling callback.
      */
     @Test
-    public void shouldNotifyObserverAboutError() {
+    public void shouldInterruptClientThread() {
         System.out.println(START_MESSAGE);
 
         Observable.<String>error(new IllegalStateException(ERROR))
                 .subscribe(
-                        event -> System.out.println(event),
-                        error -> System.err.println(error)
+                        event -> System.out.println(event)
                 );
 
         System.out.println(FINISH_MESSAGE);
